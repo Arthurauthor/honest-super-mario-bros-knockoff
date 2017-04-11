@@ -1,0 +1,9 @@
+html, body {
+  margin: 0;
+}
+
+#scroll-wrapper {
+  width: 350px;
+  height: 224px;
+  overflow: hidden;
+}
