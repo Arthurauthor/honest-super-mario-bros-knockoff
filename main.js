@@ -22,7 +22,7 @@ function drawEnvironment(callback) {
   loadImage(backgroundSource, function(img) {
     ctx.drawImage(img, 0, 0);
   });
-
+  
   callback();
 }
 
@@ -64,3 +64,86 @@ function handleKeyDown(event) {
     scrollBackground(wrapper.scrollLeft + 10);
   }
 }
+
+var coin, coinImg, coinObj;
+
+function gameLoop () {
+  window.requestAnimationFrame(gameLoop);
+  
+  coin.update();
+  coin.render();
+}
+
+function coinSpr(options){
+  var that = {},
+	  frameIndex = 0,
+	  tickCount = 0,
+	  ticksPerFrame = options.ticksPerFrame || 0,
+	  numberOfFrames = options.numberOfFrames || 1;
+  
+  that.context = options.context;
+  that.width = options.width;
+  that.height = options.height;
+  that.image = options.image;
+  that.loop = options.loop;
+  
+  that.update = function(){
+	tickCount += 1;
+	
+	if (tickCount > ticksPerFrame){
+	  tickCount = 0;
+	  
+	  // If the current frame index is in range
+      if (frameIndex < numberOfFrames - 1) {
+	    //go to the next frame
+	    frameIndex += 1;
+	  } else{
+	    frameIndex = 0;
+	  }
+    }
+  }
+  
+  
+  that.render = function(){
+	
+	// Clear the canvas
+    that.context.clearRect(0, 0, that.width, that.height);
+	
+	// draw the animation
+	that.context.drawImage(
+	  that.image, 
+	  frameIndex * that.width / numberOfFrames, 
+	  112, 
+	  that.width / numberOfFrames, 
+	  that.height, 
+	  0, 
+	  0, 
+	  that.width / numberOfFrames, 
+	  that.height)
+  }
+  return that;
+}
+
+//get coin canvas
+coinObj = document.getElementById("coinAnimation");
+coinObj.width = 16;
+coinObj.height = 16;
+
+//create coin sprite sheet
+coinImg = new Image();
+
+//create coin sprite
+coin = coinSpr({
+  context: coinObj.getContext("2d"),
+  width: 64,
+  height: 16,
+  image: coinImg,
+  numberOfFrames: 4,
+  ticksPerFrame: 4
+}); 
+
+//load coin sprite sheet
+coinImg.src = "assets/items&Objects.png";
+
+// Start the game loop as soon as the sprite sheet is loaded
+coinImg.addEventListener("load", gameLoop);
